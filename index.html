@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TIFFANY & CO. | Precious Metals & High Jewelry Valuation Radar</title>
+  
+  <!-- Google Fonts: Cormorant Garamond (럭셔리 세리프) & Pretendard (정밀 본문) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+  <!-- Tailwind CSS & Lucide Icons CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js for High-End Financial Graphics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- jsPDF for VIP Dossier Export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            // 이미지 분석 기반 웜 샴페인/베이지/앰버 팔레트
+            warm: {
+              50: '#FAF8F5',
+              100: '#F4EFEB',
+              200: '#EBE3DC',
+              300: '#DED3C7',
+              400: '#C7B9AA',
+              500: '#AFA090',
+            },
+            amberAccent: {
+              300: '#F5C678',
+              400: '#EEB358',
+              500: '#E5A857', // 이미지 속 시그니처 앰버 캡슐 컬러
+              600: '#C98C3B',
+            },
+            espresso: {
+              800: '#3D332E',
+              900: '#2A2320', // 이미지 속 딥 다크 캡슐 & 텍스트 컬러
+              950: '#1D1715',
+            },
+            tiffanyTeal: '#0ABAB5',
+            tiffanyGold: '#D4AF37',
+          },
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', 'serif'],
+            sans: ['Pretendard', '-apple-system', 'sans-serif'],
+            eng: ['Montserrat', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* 커스텀 스크롤바 및 에디토리얼 레이아웃 */
+    body {
+      background-color: #F4EFEB;
+      color: #2A2320;
+      font-family: 'Pretendard', sans-serif;
+    }
+    .font-serif-lux { font-family: 'Cormorant Garamond', Georgia, serif; }
+    .font-eng { font-family: 'Montserrat', sans-serif; }
+    
+    /* 이미지 톤앤매너 캡슐 뱃지 스타일 */
+    .capsule-amber {
+      background: linear-gradient(135deg, #F5BE6B 0%, #E5A857 100%);
+      color: #FFFFFF;
+      box-shadow: 0 4px 14px rgba(229, 168, 87, 0.35);
+    }
+    .capsule-dark {
+      background-color: #2A2320;
+      color: #F4EFEB;
+    }
+    .soft-card {
+      background-color: #FAF8F5;
+      border: 1px solid #E5DCD4;
+      box-shadow: 0 8px 30px rgba(74, 62, 57, 0.04);
+    }
+    .line-icon-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1.5px solid #2A2320;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+    .line-icon-badge:hover {
+      background-color: #2A2320;
+      color: #F4EFEB;
+    }
+    /* 펄스 애니메이션 */
+    @keyframes subtlePulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.85; transform: scale(1.02); }
+    }
+    .pulse-amber {
+      animation: subtlePulse 3s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="min-h-screen selection:bg-amberAccent-500 selection:text-white antialiased">
+
+  <!-- ========================================================
+       TOP EDITORIAL HERO BANNER (첨부 이미지 상단 감성 톤앤매너 재현)
+       ======================================================== -->
+  <section class="relative bg-gradient-to-b from-[#E6DDD4] via-[#EFE8E1] to-[#F4EFEB] border-b border-[#DED3C7] pt-12 pb-16 px-6 lg:px-16 overflow-hidden">
+    <!-- 배경 은은한 럭셔리 라인 아트 및 채광 블러 -->
+    <div class="absolute -right-20 -top-20 w-96 h-96 bg-amberAccent-300/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute left-1/4 top-0 w-80 h-80 bg-white/40 rounded-full blur-2xl pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-10 relative z-10">
+      
+      <!-- 좌측: 브랜드 헤더 & 에디토리얼 타이틀 -->
+      <div class="max-w-2xl space-y-4">
+        <div class="flex items-center space-x-3">
+          <span class="font-eng text-xs tracking-[0.3em] font-semibold text-espresso-800 uppercase">TIFFANY & CO. KOREA</span>
+          <span class="w-1.5 h-1.5 rounded-full bg-amberAccent-500"></span>
+          <span class="font-eng text-xs tracking-widest text-[#8C7D73] uppercase">HIGH JEWELRY & CRM INTELLIGENCE</span>
+        </div>
+
+        <h1 class="text-4xl lg:text-5xl font-serif-lux font-bold tracking-tight text-espresso-950 leading-[1.15]">
+          PRECIOUS METALS &<br>
+          <span class="italic font-normal text-amberAccent-600">GEMSTONE VALUATION</span> RADAR
+        </h1>
+
+        <p class="text-sm text-[#5C5048] leading-relaxed max-w-xl">
+          국제 금(Gold 24K/18K), 백금(Platinum), 다이아몬드 지수 및 실시간 실물 환율(Frankfurter API)을 추적하여, 티파니 주요 아이코닉 제품의 
+          <strong>원자재 분해(BOM) 원가 압박률</strong>과 <strong>명품 가격 인상 시점</strong>을 예측하는 VIP 투자 인텔리전스 시스템입니다.
+        </p>
+
+        <!-- 실시간 라이브 인디케이터 태그 -->
+        <div class="pt-2 flex flex-wrap items-center gap-3">
+          <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/70 border border-[#D5C7BA] text-xs font-eng text-espresso-900">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>LIVE API: USD/KRW <span id="heroLiveFxRate" class="font-bold text-amberAccent-600">1,385.40</span></span>
+          </div>
+          <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/70 border border-[#D5C7BA] text-xs text-espresso-900 font-eng">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amberAccent-500"></i>
+            <span>GOLD: <strong id="heroLiveGoldPrice">$2,684.20</strong> / oz</span>
+          </div>
+          <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/70 border border-[#D5C7BA] text-xs text-espresso-900 font-eng">
+            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-tiffanyTeal"></i>
+            <span>PRICE HIKE RISK: <strong class="text-rose-600">84% (HIGH)</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 우측: 3D 보석/원자재 비주얼 & 모노그램 뱃지 (첨부 이미지의 제품 오브제 무드 재현) -->
+      <div class="relative w-full lg:w-96 flex flex-col items-center">
+        <!-- 럭셔리 실린더 오브제 & 앰버 캡슐 타이틀 -->
+        <div class="relative w-72 h-72 rounded-3xl bg-gradient-to-tr from-[#E0D5CA] via-[#F4EFEB] to-white p-6 shadow-2xl border border-white/80 flex flex-col justify-between overflow-hidden">
+          <div class="flex items-center justify-between">
+            <span class="font-serif-lux italic text-2xl font-bold tracking-widest text-espresso-900">T&CO.</span>
+            <span class="text-[10px] font-eng tracking-wider uppercase px-2 py-0.5 rounded bg-espresso-900 text-white">NYC 1837</span>
+          </div>
+          
+          <!-- 인터랙티브 보석 프리즘 캔버스 -->
+          <div class="relative w-full h-36 flex items-center justify-center">
+            <canvas id="heroGemCanvas" width="220" height="140" class="cursor-pointer"></canvas>
+            <div class="absolute bottom-0 text-[10px] text-[#7A6C62] font-eng tracking-tight flex items-center gap-1">
+              <i data-lucide="rotate-cw" class="w-3 h-3 text-amberAccent-500 animate-spin" style="animation-duration: 10s;"></i>
+              <span>Interactive 18K Yellow Gold & Diamond Prism</span>
+            </div>
+          </div>
+
+          <div class="flex justify-between items-center text-xs border-t border-[#DED3C7] pt-2">
+            <span class="text-[#7A6C62]">Next Price Hike Window</span>
+            <span class="font-eng font-bold text-amberAccent-600">D-21 Days</span>
+          </div>
+        </div>
+
+        <!-- 이미지 특유의 앰버 오렌지 캡슐 버튼 ("MARKET ANALYSIS") -->
+        <div class="mt-4 -mb-3 z-20">
+          <button class="capsule-amber px-8 py-2 rounded-full font-eng text-xs font-bold tracking-[0.2em] uppercase transition-transform hover:scale-105 active:scale-95">
+            MARKET ANALYSIS
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================================
+       MAIN DASHBOARD GRID (이미지 하단 에디토리얼 레이아웃)
+       ======================================================== -->
+  <main class="max-w-7xl mx-auto px-6 lg:px-16 py-12 space-y-16">
+
+    <!-- SECTION 1: 상단 핵심 지표 요약 (첨부 이미지의 43%, 16%, 100min < 205min 라인 아이콘 스타일) -->
+    <section class="space-y-6">
+      <div class="flex items-center justify-between border-b border-[#DED3C7] pb-3">
+        <div class="flex items-center space-x-3">
+          <div class="line-icon-badge">
+            <i data-lucide="gauge" class="w-5 h-5 stroke-[1.5]"></i>
+          </div>
+          <div>
+            <h2 class="font-serif-lux text-2xl font-bold text-espresso-900">EXECUTIVE COMMODITY SUMMARY</h2>
+            <p class="text-xs text-[#7A6C62]">실시간 국제 런던금시장협회(LBMA) 및 글로벌 파인 주얼리 원자재 지표</p>
+          </div>
+        </div>
+        <button id="btnRefreshRates" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-full border border-[#D5C7BA] bg-white text-xs font-eng text-espresso-900 hover:bg-espresso-900 hover:text-white transition-all">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+          <span>SYNC LIVE RATES</span>
+        </button>
+      </div>
+
+      <!-- 4가지 원자재 카드 (이미지의 정갈한 미니멀 인포그래픽 박스) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        
+        <!-- CARD 1: 순금 (Gold 24K) -->
+        <div class="soft-card rounded-2xl p-5 space-y-3 relative overflow-hidden transition-all hover:-translate-y-1">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-eng tracking-wider uppercase text-[#7A6C62]">GOLD 99.9% (XAU)</span>
+            <span class="text-[10px] font-eng font-bold text-emerald-600 bg-emerald-100/70 px-2 py-0.5 rounded-full">+18.4% (YTD)</span>
+          </div>
+          <div class="space-y-1">
+            <div class="text-2xl font-serif-lux font-bold text-espresso-900" id="cardGoldOz">$2,684.20 <span class="text-xs font-normal text-[#7A6C62]">/ oz</span></div>
+            <div class="text-xs font-eng text-amberAccent-600 font-semibold" id="cardGoldGram">₩119,820 <span class="text-[#7A6C62] font-normal">/ g</span></div>
+          </div>
+          <div class="text-[11px] text-[#7A6C62] pt-2 border-t border-[#EAE2DA] flex justify-between">
+            <span>티파니 18K 주얼리 영향도</span>
+            <span class="font-bold text-espresso-900">극도로 높음 (92%)</span>
+          </div>
+        </div>
+
+        <!-- CARD 2: 백금 (Platinum 950) -->
+        <div class="soft-card rounded-2xl p-5 space-y-3 relative overflow-hidden transition-all hover:-translate-y-1">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-eng tracking-wider uppercase text-[#7A6C62]">PLATINUM PT950</span>
+            <span class="text-[10px] font-eng font-bold text-emerald-600 bg-emerald-100/70 px-2 py-0.5 rounded-full">+7.2% (YTD)</span>
+          </div>
+          <div class="space-y-1">
+            <div class="text-2xl font-serif-lux font-bold text-espresso-900" id="cardPlatOz">$988.50 <span class="text-xs font-normal text-[#7A6C62]">/ oz</span></div>
+            <div class="text-xs font-eng text-slate-700 font-semibold" id="cardPlatGram">₩44,020 <span class="text-[#7A6C62] font-normal">/ g</span></div>
+          </div>
+          <div class="text-[11px] text-[#7A6C62] pt-2 border-t border-[#EAE2DA] flex justify-between">
+            <span>웨딩 다이아 밴드 영향도</span>
+            <span class="font-bold text-espresso-900">높음 (78%)</span>
+          </div>
+        </div>
+
+        <!-- CARD 3: 은 (Sterling Silver 925) -->
+        <div class="soft-card rounded-2xl p-5 space-y-3 relative overflow-hidden transition-all hover:-translate-y-1">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-eng tracking-wider uppercase text-[#7A6C62]">SILVER 92.5% (XAG)</span>
+            <span class="text-[10px] font-eng font-bold text-emerald-600 bg-emerald-100/70 px-2 py-0.5 rounded-full">+24.8% (YTD)</span>
+          </div>
+          <div class="space-y-1">
+            <div class="text-2xl font-serif-lux font-bold text-espresso-900" id="cardSilverOz">$31.85 <span class="text-xs font-normal text-[#7A6C62]">/ oz</span></div>
+            <div class="text-xs font-eng text-slate-700 font-semibold" id="cardSilverGram">₩1,420 <span class="text-[#7A6C62] font-normal">/ g</span></div>
+          </div>
+          <div class="text-[11px] text-[#7A6C62] pt-2 border-t border-[#EAE2DA] flex justify-between">
+            <span>리턴투 티파니 컬렉션</span>
+            <span class="font-bold text-rose-600">인상률 최고 (25%)</span>
+          </div>
+        </div>
+
+        <!-- CARD 4: 라파포트 다이아몬드 지수 -->
+        <div class="soft-card rounded-2xl p-5 space-y-3 relative overflow-hidden transition-all hover:-translate-y-1">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-eng tracking-wider uppercase text-[#7A6C62]">DIAMOND INDEX (1.0ct)</span>
+            <span class="text-[10px] font-eng font-bold text-amber-700 bg-amber-100/80 px-2 py-0.5 rounded-full">안정세 (Stable)</span>
+          </div>
+          <div class="space-y-1">
+            <div class="text-2xl font-serif-lux font-bold text-espresso-900">118.4 pts</div>
+            <div class="text-xs font-eng text-tiffanyTeal font-semibold">Tier-1 Natural Triple Ex</div>
+          </div>
+          <div class="text-[11px] text-[#7A6C62] pt-2 border-t border-[#EAE2DA] flex justify-between">
+            <span>티파니 세팅 링 가치보존</span>
+            <span class="font-bold text-espresso-900">AAA 등급</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 2: [신박한 기능 1 & 2] 제품별 1:1 원자재 분해(BOM) & 인상 예고 레이더 -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- 좌측 7열: 티파니 아이코닉 제품 1:1 분해 리버스 엔지니어링 (BOM) -->
+      <div class="lg:col-span-7 soft-card rounded-3xl p-6 lg:p-8 space-y-6">
+        <div class="flex items-start justify-between">
+          <div class="space-y-1">
+            <!-- 첨부 이미지의 다크 캡슐 태그 ("FUNCTION DESCRIPTION") 재현 -->
+            <div class="inline-block px-4 py-1 rounded-full capsule-dark font-eng text-[10px] tracking-widest font-semibold uppercase mb-2">
+              REVERSE ENGINEERING & BOM
+            </div>
+            <h3 class="font-serif-lux text-2xl font-bold text-espresso-900">아이코닉 컬렉션 원자재 분해 및 마진 압박률</h3>
+            <p class="text-xs text-[#7A6C62]">제품을 선택하면 금/백금/다이아몬드 실물 원가와 세공·브랜드 가치 구성비를 분해합니다.</p>
+          </div>
+          <div class="w-10 h-10 rounded-full border border-[#D5C7BA] flex items-center justify-center text-espresso-900">
+            <i data-lucide="gem" class="w-5 h-5"></i>
+          </div>
+        </div>
+
+        <!-- 제품 선택 셀렉터 탭 -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <button data-prod="t1-ring" class="prod-selector-btn active px-3 py-2.5 rounded-xl border border-espresso-900 bg-espresso-900 text-white text-xs font-semibold text-center transition-all">
+            T1 다이아 링
+          </button>
+          <button data-prod="hardwear-link" class="prod-selector-btn px-3 py-2.5 rounded-xl border border-[#D5C7BA] bg-white text-espresso-900 text-xs font-semibold text-center hover:bg-[#EAE2DA] transition-all">
+            하드웨어 링크 목걸이
+          </button>
+          <button data-prod="setting-ring" class="prod-selector-btn px-3 py-2.5 rounded-xl border border-[#D5C7BA] bg-white text-espresso-900 text-xs font-semibold text-center hover:bg-[#EAE2DA] transition-all">
+            티파니 세팅 PT950
+          </button>
+          <button data-prod="return-heart" class="prod-selector-btn px-3 py-2.5 rounded-xl border border-[#D5C7BA] bg-white text-espresso-900 text-xs font-semibold text-center hover:bg-[#EAE2DA] transition-all">
+            리턴투티파니 하트
+          </button>
+        </div>
+
+        <!-- 분해 상세 렌더링 카드 -->
+        <div class="bg-white/80 rounded-2xl p-5 border border-[#E5DCD4] space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#EAE2DA] gap-2">
+            <div>
+              <span class="text-[10px] font-eng tracking-wider uppercase text-amberAccent-600 font-bold" id="bomCategory">FINE JEWELRY / 18K YELLOW GOLD</span>
+              <h4 class="text-lg font-bold text-espresso-900" id="bomTitle">티파니 T1 와이드 다이아몬드 링</h4>
+            </div>
+            <div class="text-right">
+              <span class="text-xs text-[#7A6C62]">현재 백화점 공식 정가</span>
+              <div class="text-xl font-serif-lux font-bold text-espresso-900" id="bomRetailPrice">₩4,250,000</div>
+            </div>
+          </div>
+
+          <!-- 부품 및 소재 규격 그리드 (첨부 이미지의 43% / 16% / Advantage 리스트 톤) -->
+          <div class="grid grid-cols-3 gap-3 text-center">
+            <div class="p-3 bg-[#FAF8F5] rounded-xl border border-[#EBE3DC]">
+              <span class="text-[10px] text-[#7A6C62] block">순수 중량 (Weight)</span>
+              <span class="font-eng font-bold text-sm text-espresso-900" id="bomWeight">8.42 g (18K)</span>
+            </div>
+            <div class="p-3 bg-[#FAF8F5] rounded-xl border border-[#EBE3DC]">
+              <span class="text-[10px] text-[#7A6C62] block">원자재 실물 가치</span>
+              <span class="font-eng font-bold text-sm text-amberAccent-600" id="bomRawCost">₩756,800</span>
+            </div>
+            <div class="p-3 bg-[#FAF8F5] rounded-xl border border-[#EBE3DC]">
+              <span class="text-[10px] text-[#7A6C62] block">원자재 비중 (BOM)</span>
+              <span class="font-eng font-bold text-sm text-espresso-900" id="bomRawRatio">17.8%</span>
+            </div>
+          </div>
+
+          <!-- 원가 상승에 따른 마진 압박 게이지 -->
+          <div class="space-y-1.5 pt-1">
+            <div class="flex justify-between text-xs text-[#7A6C62]">
+              <span>금 시세 급등에 따른 본사 마진 압박 지수</span>
+              <span class="font-bold text-rose-600" id="bomMarginStress">+18.2% (강력 인상 압력)</span>
+            </div>
+            <div class="w-full bg-[#EAE2DA] h-2 rounded-full overflow-hidden">
+              <div id="bomMarginBar" class="bg-gradient-to-r from-amberAccent-500 to-rose-500 h-full w-[78%] transition-all duration-500"></div>
+            </div>
+            <p class="text-[11px] text-[#7A6C62] pt-1">
+              * 순금 1g당 12만 원 돌파 시 현재 정가로는 18K 골드 라인의 본사 목표 영업이익률 유지가 불가능하여 상반기 정가 인상이 불가피합니다.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 우측 5열: [신박한 기능 2] AI 명품 가격 인상 예고 레이더 (Price Hike Predictor) -->
+      <div class="lg:col-span-5 soft-card rounded-3xl p-6 lg:p-8 flex flex-col justify-between space-y-6">
+        <div class="space-y-2">
+          <div class="inline-block px-4 py-1 rounded-full capsule-amber font-eng text-[10px] tracking-widest font-semibold uppercase">
+            PRICE HIKE PREDICTOR
+          </div>
+          <h3 class="font-serif-lux text-2xl font-bold text-espresso-900">명품 가격 인상 시점 예측 레이더</h3>
+          <p class="text-xs text-[#7A6C62]">
+            원자재 시세 + 원/달러 환율 + 글로벌 명품 하우스(LVMH/카르티에/반클리프)의 최근 인상 주기를 알고리즘으로 분석합니다.
+          </p>
+        </div>
+
+        <!-- 둥근 다이얼 인디케이터 (첨부 이미지의 LENS DESIGN 원형 렌더링 스타일) -->
+        <div class="bg-white/80 rounded-2xl p-6 border border-[#E5DCD4] flex flex-col items-center text-center space-y-4">
+          <div class="relative w-40 h-40 flex items-center justify-center">
+            <!-- 원형 프로그레스 SVG -->
+            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="40" stroke="#EAE2DA" stroke-width="8" fill="none" />
+              <circle cx="50" cy="50" r="40" stroke="#E5A857" stroke-width="8" stroke-dasharray="251.2" stroke-dashoffset="40" stroke-linecap="round" fill="none" />
+            </svg>
+            <div class="absolute flex flex-col items-center">
+              <span class="text-3xl font-serif-lux font-bold text-espresso-900">84%</span>
+              <span class="text-[9px] font-eng tracking-widest uppercase text-rose-600 font-bold">CRITICAL RISK</span>
+            </div>
+          </div>
+
+          <div class="space-y-1">
+            <div class="text-sm font-bold text-espresso-900">예상 인상 시기: 2026년 12월 1주차</div>
+            <div class="text-xs text-amberAccent-600 font-eng font-semibold">예상 인상률: +6.5% ~ +9.0%</div>
+            <p class="text-[11px] text-[#7A6C62] max-w-xs pt-1">
+              "웨딩 밴드 및 하이주얼리 구매 계획이 있는 VIP 고객에게 이번 달 내 구매를 제안하기에 가장 완벽한 타이밍입니다."
+            </p>
+          </div>
+        </div>
+
+        <!-- VIP 구매 시점 혜택 요약 (이미지의 ADVANTAGE 리스트 스타일 재현) -->
+        <div class="space-y-2 border-t border-[#EAE2DA] pt-4 text-xs">
+          <div class="flex items-center space-x-2 font-eng text-[11px] tracking-wider uppercase font-bold text-espresso-900">
+            <span class="w-1.5 h-1.5 rounded-full bg-amberAccent-500"></span>
+            <span>STRATEGIC ADVANTAGE FOR VIP</span>
+          </div>
+          <ul class="space-y-1.5 text-xs text-[#5C5048]">
+            <li class="flex items-start gap-1.5">
+              <span class="text-amberAccent-600 font-bold">1.</span>
+              <span>인상 전 구매 시 <strong>최대 38만 원 ~ 120만 원</strong> 즉각적 차익 방어</span>
+            </li>
+            <li class="flex items-start gap-1.5">
+              <span class="text-amberAccent-600 font-bold">2.</span>
+              <span>웨딩 마일리지 백화점 추가 적립 기간과 결합 시 실구매 체감 혜택 극대화</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- SECTION 3: [신박한 기능 3] 5개년 자산 가치 비교 시뮬레이터 (Gold vs Tiffany vs KOSPI) -->
+    <section class="soft-card rounded-3xl p-6 lg:p-8 space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#DED3C7] gap-3">
+        <div>
+          <div class="inline-block px-4 py-1 rounded-full capsule-dark font-eng text-[10px] tracking-widest font-semibold uppercase mb-2">
+            WEALTH PRESERVATION
+          </div>
+          <h3 class="font-serif-lux text-2xl font-bold text-espresso-900">럭셔리 주얼리의 자산 보존성 및 가치 상승 비교</h3>
+          <p class="text-xs text-[#7A6C62]">
+            "티파니 주얼리는 단순 소비재인가, 아니면 인플레이션을 헷지하는 실물 자산인가?" 5개년 누적 수익률 비교 분석.
+          </p>
+        </div>
+
+        <div class="flex items-center space-x-2 bg-white px-3 py-1.5 rounded-xl border border-[#D5C7BA] text-xs">
+          <span class="text-[#7A6C62]">기준 투자금:</span>
+          <span class="font-eng font-bold text-espresso-900">₩10,000,000 (1천만 원)</span>
+        </div>
+      </div>
+
+      <!-- 차트 렌더링 영역 (샴페인 골드 테마) -->
+      <div class="w-full h-80 bg-white/70 rounded-2xl p-4 border border-[#E5DCD4]">
+        <canvas id="wealthComparisonChart"></canvas>
+      </div>
+
+      <!-- 3대 자산 분석 요약 칩 (첨부 이미지의 ADVANTAGE / DISADVANTAGE 2단 비교 재현) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+        <div class="p-4 bg-white/90 rounded-2xl border border-[#E5DCD4] space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-espresso-900">티파니 아이코닉 파인 주얼리</span>
+            <span class="text-xs font-eng font-bold text-emerald-600">+48.5% (5년)</span>
+          </div>
+          <p class="text-[11px] text-[#7A6C62] leading-relaxed">
+            금 시세 인상 + 브랜드 정기 프라이스 인상으로 인해 5년 전 구매가가 현재 중고/리세일 시장에서 원금 이상의 높은 가치 보존율을 기록.
+          </p>
+        </div>
+
+        <div class="p-4 bg-white/90 rounded-2xl border border-[#E5DCD4] space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-espresso-900">순금 골드바 (Gold Bullion)</span>
+            <span class="text-xs font-eng font-bold text-amberAccent-600">+62.4% (5년)</span>
+          </div>
+          <p class="text-[11px] text-[#7A6C62] leading-relaxed">
+            순수 금 시세 상승분을 100% 추종하나, 세공 디자인이나 착용을 통한 심미적 효용 가치와 브랜드 프리미엄은 부재.
+          </p>
+        </div>
+
+        <div class="p-4 bg-white/90 rounded-2xl border border-[#E5DCD4] space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-espresso-900">국내 주식 코스피 (KOSPI 200)</span>
+            <span class="text-xs font-eng font-bold text-slate-600">+11.2% (5년)</span>
+          </div>
+          <p class="text-[11px] text-[#7A6C62] leading-relaxed">
+            변동성이 크고 환율 방어가 취약하여, 고액 자산가들의 인플레이션 헷지 포트폴리오 관점에서 하이주얼리의 안정성이 재조명됨.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: [신박한 기능 4] VIP 프라이빗 세일즈 1-클릭 리포트 발급기 (Dossier Generator) -->
+    <section class="soft-card rounded-3xl p-6 lg:p-8 space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#DED3C7] gap-3">
+        <div>
+          <div class="inline-block px-4 py-1 rounded-full capsule-amber font-eng text-[10px] tracking-widest font-semibold uppercase mb-2">
+            VIP CLIENT INTELLIGENCE
+          </div>
+          <h3 class="font-serif-lux text-2xl font-bold text-espresso-900">VIP 전용 원자재 & 가격 인상 프리뷰 보고서 1초 생성</h3>
+          <p class="text-xs text-[#7A6C62]">
+            매장 상담 시 고객명과 관심 제품을 입력하면, 오늘자 실시간 시세와 인상 임박 분석이 담긴 최고급 카탈로그형 PDF를 즉시 발행합니다.
+          </p>
+        </div>
+        <div class="w-10 h-10 rounded-full border border-[#D5C7BA] flex items-center justify-center text-espresso-900">
+          <i data-lucide="file-text" class="w-5 h-5"></i>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label class="text-xs font-semibold text-espresso-900">VIP 고객명</label>
+          <input type="text" id="reportClientName" value="이지은 VIP 고객님" class="w-full mt-1.5 px-3.5 py-2.5 bg-white border border-[#D5C7BA] rounded-xl text-xs text-espresso-900 focus:outline-none focus:border-amberAccent-500">
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-espresso-900">상담 부티크 지점</label>
+          <select id="reportBoutique" class="w-full mt-1.5 px-3.5 py-2.5 bg-white border border-[#D5C7BA] rounded-xl text-xs text-espresso-900 focus:outline-none focus:border-amberAccent-500">
+            <option value="갤러리아 명품관 EAST">갤러리아 명품관 EAST 부티크</option>
+            <option value="신세계백화점 강남점">신세계백화점 강남점 부티크</option>
+            <option value="청담 플래그십 스토어">청담 플래그십 스토어</option>
+            <option value="롯데백화점 에비뉴엘 본점">롯데백화점 에비뉴엘 본점</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-espresso-900">추천/상담 관심 컬렉션</label>
+          <input type="text" id="reportProductInterest" value="티파니 T1 와이드 링 & 하드웨어 펜던트" class="w-full mt-1.5 px-3.5 py-2.5 bg-white border border-[#D5C7BA] rounded-xl text-xs text-espresso-900 focus:outline-none focus:border-amberAccent-500">
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-center justify-between pt-3 gap-4">
+        <div class="flex items-center space-x-2 text-xs text-[#7A6C62]">
+          <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
+          <span>실시간 환율(Frankfurter API) 및 오늘자 런던 금시세 공식 데이터가 자동 워터마크 각인됩니다.</span>
+        </div>
+        <button id="btnGenerateVipDossier" class="w-full sm:w-auto px-8 py-3 rounded-full capsule-dark font-eng text-xs font-bold tracking-widest uppercase hover:bg-espresso-800 transition-all flex items-center justify-center space-x-2 shadow-lg">
+          <i data-lucide="printer" class="w-4 h-4"></i>
+          <span>GENERATE VIP DOSSIER (PDF)</span>
+        </button>
+      </div>
+
+      <div id="dossierStatus" class="text-xs text-[#7A6C62] font-mono bg-white/60 p-3 rounded-xl border border-[#E5DCD4] hidden"></div>
+    </section>
+
+  </main>
+
+  <!-- ========================================================
+       PROMINENT LUXURY FLOATING CHATBOT BUTTON (세련되고 큼지막한 플로팅 버튼)
+       ======================================================== -->
+  <aside class="fixed bottom-8 right-8 z-50">
+    <button id="btnOpenAdvisorChat" class="group relative flex items-center space-x-3.5 pl-4 pr-6 py-3.5 rounded-full bg-gradient-to-r from-espresso-950 via-espresso-900 to-[#352A26] border-2 border-amberAccent-400 text-white shadow-2xl hover:shadow-amberAccent-500/30 transition-all duration-300 hover:scale-105 active:scale-95">
+      <!-- 앰버 골드 펄스 글로우 -->
+      <span class="absolute -inset-1 rounded-full bg-gradient-to-r from-amberAccent-500 to-tiffanyGold opacity-30 blur-md group-hover:opacity-70 transition duration-500 animate-pulse"></span>
+      
+      <!-- 주얼리 라인 아이콘 뱃지 -->
+      <div class="relative w-11 h-11 rounded-full bg-gradient-to-tr from-amberAccent-500 to-amberAccent-300 flex items-center justify-center text-espresso-950 shadow-md">
+        <i data-lucide="sparkles" class="w-6 h-6 stroke-[2.2]"></i>
+      </div>
+
+      <!-- 텍스트 레이블 -->
+      <div class="relative text-left">
+        <div class="flex items-center space-x-1.5">
+          <span class="font-eng text-xs font-bold tracking-widest text-amberAccent-400 uppercase">TIFFANY AI ADVISOR</span>
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+        </div>
+        <div class="text-[11px] text-[#DED3C7] font-medium tracking-tight">VIP 맞춤 설득 스크립트 봇 (Sonnet 5.5)</div>
+      </div>
+
+      <!-- 우측 오픈 화살표 -->
+      <div class="relative pl-1">
+        <i data-lucide="chevron-up" class="w-4 h-4 text-amberAccent-400 group-hover:-translate-y-0.5 transition-transform"></i>
+      </div>
+    </button>
+  </aside>
+
+  <!-- ========================================================
+       TIFFANY CLIENT ADVISOR CHATBOT MODAL (오픈라우터 Sonnet 3.5 탑재)
+       ======================================================== -->
+  <div id="advisorChatModal" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-6 bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+    <div id="advisorChatPanel" class="w-full max-w-2xl h-[92vh] sm:h-[680px] bg-[#FAF8F5] sm:rounded-3xl shadow-2xl border border-[#D5C7BA] flex flex-col overflow-hidden transform translate-y-8 transition-transform duration-300">
+      
+      <!-- 챗봇 상단 헤더 -->
+      <div class="px-6 py-4 bg-espresso-950 text-white flex items-center justify-between border-b border-amberAccent-500/40">
+        <div class="flex items-center space-x-3">
+          <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-amberAccent-500 to-amberAccent-300 flex items-center justify-center text-espresso-950">
+            <i data-lucide="gem" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <h3 class="font-serif-lux text-lg font-bold tracking-wider text-amberAccent-300">TIFFANY & CO.</h3>
+              <span id="headerModelBadge" class="text-[10px] font-eng bg-amberAccent-500/20 text-amberAccent-300 px-2 py-0.5 rounded border border-amberAccent-500/30">Sonnet 5.5 Active</span>
+            </div>
+            <p class="text-[11px] text-[#C7B9AA]">부티크 세일즈 어드바이저 전용 VIP 설득 스크립트 어시스턴트</p>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <!-- 모델 선택 드롭다운 -->
+          <select id="chatModelSelector" class="px-2.5 py-1.5 rounded-lg bg-espresso-900 border border-espresso-800 text-amberAccent-300 text-xs font-eng focus:outline-none focus:border-amberAccent-400">
+            <option value="anthropic/claude-sonnet-5.5" selected>Claude Sonnet 5.5 (공식 추천)</option>
+            <option value="anthropic/claude-sonnet-5">Claude Sonnet 5</option>
+            <option value="anthropic/claude-sonnet-4.6">Claude Sonnet 4.6</option>
+            <option value="anthropic/claude-opus-5.5">Claude Opus 5.5</option>
+            <option value="anthropic/claude-haiku-5.5">Claude Haiku 5.5 (초고속)</option>
+          </select>
+          <button id="btnOpenApiKeyModal" class="p-2 rounded-lg text-xs text-[#DED3C7] hover:text-white hover:bg-espresso-900 border border-espresso-800 transition-all flex items-center gap-1">
+            <i data-lucide="key" class="w-3.5 h-3.5 text-amberAccent-400"></i>
+            <span class="hidden sm:inline font-eng text-[11px]">API Key</span>
+          </button>
+          <button id="btnCloseAdvisorChat" class="w-8 h-8 rounded-full bg-espresso-900 hover:bg-espresso-800 text-white flex items-center justify-center transition-all">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- 실시간 라이브 컨텍스트 뱃지 바 -->
+      <div class="px-6 py-2 bg-[#EFE8E1] border-b border-[#DED3C7] flex items-center justify-between text-[11px] text-[#5C5048]">
+        <div class="flex items-center space-x-3 overflow-x-auto">
+          <span class="flex items-center gap-1 font-eng">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            USD/KRW: <strong id="chatContextFx" class="text-espresso-900 font-bold">1,385.40</strong>
+          </span>
+          <span>|</span>
+          <span class="font-eng">Gold: <strong id="chatContextGold" class="text-amberAccent-600 font-bold">$2,684.20</strong></span>
+          <span>|</span>
+          <span>인상위험: <strong class="text-rose-600 font-bold">84% (D-21)</strong></span>
+        </div>
+        <span class="text-[10px] text-[#8C7D73] hidden sm:inline">실시간 시세 자동 주입 중</span>
+      </div>
+
+      <!-- 대화 메시지 영역 -->
+      <div id="chatMessageList" class="flex-1 p-6 overflow-y-auto space-y-4 custom-scroll bg-[#FAF8F5]">
+        <!-- 웰컴 메시지 -->
+        <div class="flex items-start space-x-3">
+          <div class="w-8 h-8 rounded-full bg-espresso-900 text-amberAccent-300 flex items-center justify-center shrink-0 text-xs font-serif-lux font-bold mt-1">
+            T&C
+          </div>
+          <div class="bg-white p-4 rounded-2xl rounded-tl-sm border border-[#E5DCD4] shadow-sm max-w-[85%] space-y-2 text-xs text-espresso-900 leading-relaxed">
+            <p class="font-semibold text-amberAccent-600">반갑습니다. 티파니앤코 VIP 세일즈 인텔리전스 어드바이저입니다.</p>
+            <p>오늘자 실시간 금 시세 급등과 환율 상승으로 인해 매장 고객님들의 가격 인상 전 구매 문의가 집중되고 있습니다. 아래 추천 질문을 누르시거나 상담 중인 상황을 입력하시면 <strong>Sonnet 3.5 기반의 품격 있는 VIP 설득 화법</strong>을 즉시 작성해 드립니다.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 퀵 프리셋 질문 칩 (매장 직원이 가장 많이 겪는 4대 상황) -->
+      <div class="px-6 py-2.5 bg-[#FAF8F5] border-t border-[#EAE2DA] overflow-x-auto flex items-center gap-2">
+        <button class="quick-prompt-btn whitespace-nowrap px-3 py-1.5 rounded-full bg-white border border-[#D5C7BA] text-xs text-espresso-900 hover:border-amberAccent-500 hover:bg-amberAccent-50 transition-all" data-prompt="오늘 방문하신 VIP 고객님이 2,890만원짜리 '하드웨어 그래듀에이티드 링크 목걸이' 가격을 망설이고 계셔. 금값 급등(94g 솔리드 골드)과 다음달 가격 인상 리스크를 근거로 품격 있게 당일 결제를 이끄는 설득 화법 3가지를 작성해줘.">
+          💎 2,800만원 목걸이 망설이는 VIP 설득
+        </button>
+        <button class="quick-prompt-btn whitespace-nowrap px-3 py-1.5 rounded-full bg-white border border-[#D5C7BA] text-xs text-espresso-900 hover:border-amberAccent-500 hover:bg-amberAccent-50 transition-all" data-prompt="웨딩 밴드로 티파니 T1 링과 까르띠에 러브링을 비교하는 예비 신혼부부 고객이야. 타사를 비방하지 않으면서 18K 골드 중량감과 다이아몬드 파베 세팅의 우위, 가격 인상 전 구매 혜택을 정중하게 브리핑해줘.">
+          💍 까르띠에 vs 티파니 T1 비교 고객 브리핑
+        </button>
+        <button class="quick-prompt-btn whitespace-nowrap px-3 py-1.5 rounded-full bg-white border border-[#D5C7BA] text-xs text-espresso-900 hover:border-amberAccent-500 hover:bg-amberAccent-50 transition-all" data-prompt="VIP 단골 고객님께 보낼 12월 정기 가격 인상 예고 카카오톡/문자 초안을 티파니 고유의 우아하고 극도로 정중한 톤앤매너로 작성해줘.">
+          📜 가격 인상 예고 VIP 카톡 초대장
+        </button>
+      </div>
+
+      <!-- 입력창 박스 -->
+      <div class="p-4 bg-white border-t border-[#DED3C7]">
+        <form id="advisorChatForm" class="flex items-center gap-2">
+          <input type="text" id="advisorChatInput" placeholder="VIP 고객의 반응이나 추천받고 싶은 설득 화법을 입력하세요..." class="flex-1 px-4 py-3 bg-[#FAF8F5] border border-[#D5C7BA] rounded-2xl text-xs text-espresso-900 placeholder-[#8C7D73] focus:outline-none focus:border-amberAccent-500">
+          <button type="submit" id="btnSendAdvisorChat" class="px-5 py-3 rounded-2xl bg-espresso-950 hover:bg-espresso-900 text-amberAccent-300 font-eng text-xs font-bold uppercase transition-all flex items-center gap-1.5 shadow-md">
+            <span>SEND</span>
+            <i data-lucide="arrow-up" class="w-3.5 h-3.5 stroke-[2.5]"></i>
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================
+       OPENROUTER API KEY CONFIG MODAL
+       ======================================================== -->
+  <div id="apiKeyModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="w-full max-w-md bg-white rounded-3xl p-6 shadow-2xl border border-[#D5C7BA] space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-[#EAE2DA]">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="key" class="w-5 h-5 text-amberAccent-500"></i>
+          <h4 class="font-serif-lux text-xl font-bold text-espresso-900">OpenRouter API Key 설정</h4>
+        </div>
+        <button id="btnCloseApiKeyModal" class="text-[#8C7D73] hover:text-espresso-900">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <p class="text-xs text-[#5C5048] leading-relaxed">
+        <strong>Claude Sonnet 5.5</strong> 모델로 실시간 VIP 설득 스크립트를 생성하기 위해 본인의 OpenRouter API 키를 입력해 주세요. 키는 외부 서버로 전송되지 않고 귀하의 브라우저 로컬 저장소(localStorage)에만 안전하게 보관됩니다.
+      </p>
+      <div>
+        <label class="text-[11px] font-semibold text-espresso-900 block mb-1">OpenRouter API Key (sk-or-v1-...)</label>
+        <input type="password" id="openRouterKeyInput" placeholder="sk-or-v1-..." class="w-full px-3.5 py-2.5 bg-[#FAF8F5] border border-[#D5C7BA] rounded-xl text-xs font-mono text-espresso-900 focus:outline-none focus:border-amberAccent-500">
+      </div>
+      <div class="flex items-center justify-between pt-2">
+        <span class="text-[10px] text-[#8C7D73]">기본 모델: anthropic/claude-sonnet-5.5</span>
+        <button id="btnSaveApiKey" class="px-5 py-2.5 rounded-full capsule-amber font-eng text-xs font-bold tracking-wider uppercase hover:scale-105 transition-all">
+          저장하고 적용
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       FOOTER
+       ======================================================== -->
+  <footer class="border-t border-[#DED3C7] bg-[#EFE8E1] py-8 px-6 lg:px-16 text-center text-xs text-[#7A6C62] space-y-2">
+    <div class="flex items-center justify-center space-x-4 font-eng">
+      <span class="font-bold text-espresso-900">TIFFANY & CO. KOREA</span>
+      <span>|</span>
+      <span>RETAIL CRM & COMMODITY INTELLIGENCE</span>
+      <span>|</span>
+      <span>NO-KEY OPEN API POWERED</span>
+    </div>
+    <p class="text-[11px] text-[#8C7D73]">
+      본 시스템은 Frankfurter Currency API(ECB 기준) 및 공공 금융 데이터를 기반으로 브라우저 로컬에서 안전하게 가동됩니다.
+    </p>
+  </footer>
+
+  <!-- Application Logic -->
+  <script src="radar_engine.js"></script>
+</body>
+</html>
+
